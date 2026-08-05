@@ -1,0 +1,56 @@
+name: docker
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout master
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: install nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.11.1'
+
+      - name: Update CA certificates
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates
+          sudo update-ca-certificates
+
+      - name: Create .env file from secrets
+        run: |
+          echo "VUE_APP_OAUTH_SERVER_URL=${{ secrets.VUE_APP_OAUTH_SERVER_URL || 'http://127.0.0.1:8090' }}" > .env
+          echo "VUE_APP_OAUTH_CLIENT_ID=${{ secrets.VUE_APP_OAUTH_CLIENT_ID || '' }}" >> .env
+          echo "VUE_APP_OAUTH_REDIRECT_URI=${{ secrets.VUE_APP_OAUTH_REDIRECT_URI || '' }}" >> .env
+          echo "VUE_APP_OAUTH_SCOPE=${{ secrets.VUE_APP_OAUTH_SCOPE || 'read write' }}" >> .env
+          echo "VUE_APP_OAUTH_CLIENT_SECRET=${{ secrets.VUE_APP_OAUTH_CLIENT_SECRET || '' }}" >> .env
+          cat .env
+
+      - name: generate dist folder
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: '0'
+        run: |
+          npm ci --no-audit
+          npm run build
+
+      - name: login aliyuncs
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: build and push docker image to aliyuncs
+        run: |
+          docker build -t ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_user .
+          docker push ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_user
