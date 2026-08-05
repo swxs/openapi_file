@@ -1,0 +1,30 @@
+.github/workflows/travis.yml
+  h_ee4a963711c0f7 55-56
+Dockerfile
+  h_ee4a963711c0f7 1,3-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "f7ebf76b64fe30a1984959bfe5df0a378053f15e",
+  "prompts": {
+    "9e564440704d6681": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "821f691c-1399-4bd4-a100-3f56f77a2d21",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "swxs",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_ee4a963711c0f7": {
+      "author": "swxs"
+    }
+  }
+}
