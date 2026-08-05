@@ -16,33 +16,6 @@ jobs:
         with:
           ref: master
 
-      - name: install nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.11.1'
-
-      - name: Update CA certificates
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates
-          sudo update-ca-certificates
-
-      - name: Create .env file from secrets
-        run: |
-          echo "VUE_APP_OAUTH_SERVER_URL=${{ secrets.VUE_APP_OAUTH_SERVER_URL || 'http://127.0.0.1:8090' }}" > .env
-          echo "VUE_APP_OAUTH_CLIENT_ID=${{ secrets.VUE_APP_OAUTH_CLIENT_ID || '' }}" >> .env
-          echo "VUE_APP_OAUTH_REDIRECT_URI=${{ secrets.VUE_APP_OAUTH_REDIRECT_URI || '' }}" >> .env
-          echo "VUE_APP_OAUTH_SCOPE=${{ secrets.VUE_APP_OAUTH_SCOPE || 'read write' }}" >> .env
-          echo "VUE_APP_OAUTH_CLIENT_SECRET=${{ secrets.VUE_APP_OAUTH_CLIENT_SECRET || '' }}" >> .env
-          cat .env
-
-      - name: generate dist folder
-        env:
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-        run: |
-          npm ci --no-audit
-          npm run build
-
       - name: login aliyuncs
         uses: docker/login-action@v2
         with:
@@ -52,5 +25,14 @@ jobs:
 
       - name: build and push docker image to aliyuncs
         run: |
-          docker build -t ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_file .
+          docker build \
+            --build-arg VUE_APP_API_BASE_URL="${{ secrets.VUE_APP_API_BASE_URL || '' }}" \
+            --build-arg VUE_APP_OAUTH_SERVER_URL="${{ secrets.VUE_APP_OAUTH_SERVER_URL || 'http://127.0.0.1:8090' }}" \
+            --build-arg VUE_APP_OAUTH_CLIENT_ID="${{ secrets.VUE_APP_OAUTH_CLIENT_ID || '' }}" \
+            --build-arg VUE_APP_OAUTH_CLIENT_SECRET="${{ secrets.VUE_APP_OAUTH_CLIENT_SECRET || '' }}" \
+            --build-arg VUE_APP_OAUTH_REDIRECT_URI="${{ secrets.VUE_APP_OAUTH_REDIRECT_URI || '' }}" \
+            --build-arg VUE_APP_OAUTH_SCOPE="${{ secrets.VUE_APP_OAUTH_SCOPE || 'read write' }}" \
+            --build-arg VUE_APP_UPLOAD_MAX_BYTES="${{ secrets.VUE_APP_UPLOAD_MAX_BYTES || '524288000' }}" \
+            -t ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_file \
+            .
           docker push ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_file
