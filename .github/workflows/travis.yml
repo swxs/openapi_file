@@ -52,5 +52,5 @@ jobs:
 
       - name: build and push docker image to aliyuncs
         run: |
-          docker build -t ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_user .
-          docker push ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_user
+          docker build -t ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_file .
+          docker push ${{ secrets.DOCKER_REGISTRY }}/swxs/openapi_file
