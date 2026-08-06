@@ -12,6 +12,10 @@ export function deleteFile(id) {
   return api.delete(`${FILE_INFO}${id}`);
 }
 
+export function updateFile(id, data) {
+  return api.put(`${FILE_INFO}${id}`, data);
+}
+
 export function presignUpload(data) {
   return api.post(`${PRESIGN}/upload`, data);
 }

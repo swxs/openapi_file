@@ -108,7 +108,7 @@
                   </button>
                   <span class="type-cell">{{ categoryLabel(file) }}</span>
                   <span class="mono">{{ formatBytes(file.file_size) }}</span>
-                  <time>{{ formatDate(file.updated || file.create_at) }}</time>
+                  <time>{{ formatDate(file.create_at) }}</time>
                   <span class="row-actions">
                     <a-tooltip title="预览或下载">
                       <button type="button" @click="openFile(file)">
@@ -218,6 +218,7 @@
       :open="previewOpen"
       :file="previewFile"
       @close="previewOpen = false"
+      @renamed="onFileRenamed"
     />
 
     <a-modal
@@ -277,7 +278,6 @@ import {
   createShare,
   deleteFile,
   deleteShare,
-  getDownloadUrl,
   listFiles,
   listShares,
   revokeShare,
@@ -289,7 +289,6 @@ import {
   filterAndSortFiles,
   formatBytes,
   formatDate,
-  previewKind,
   unwrapData,
   unwrapList,
 } from "../utils/files";
@@ -372,7 +371,7 @@ async function loadFiles() {
         use_pager: 1,
         page: 1,
         page_number: 500,
-        order_by: ["-update_at"],
+        order_by: ["-create_at"],
       }),
     );
     files.value = result.data;
@@ -436,20 +435,17 @@ function onUploadFinished(file) {
 }
 
 async function openFile(file) {
-  if (previewKind(file) !== "download") {
-    previewFile.value = file;
-    previewOpen.value = true;
-    return;
+  previewFile.value = file;
+  previewOpen.value = true;
+}
+
+function onFileRenamed(updated) {
+  const index = files.value.findIndex((item) => item.id === updated.id);
+  if (index >= 0) {
+    files.value[index] = { ...files.value[index], ...updated };
   }
-  try {
-    const payload = unwrapData(await getDownloadUrl(file.id, "attachment"));
-    const url =
-      (typeof payload === "string" ? payload : payload?.url) ||
-      payload?.presigned_url;
-    if (!url) throw new Error("服务端未返回下载地址");
-    window.open(url, "_blank", "noopener,noreferrer");
-  } catch {
-    message.error("下载地址获取失败");
+  if (previewFile.value?.id === updated.id) {
+    previewFile.value = { ...previewFile.value, ...updated };
   }
 }
 

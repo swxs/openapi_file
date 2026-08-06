@@ -21,6 +21,27 @@ export function extensionOf(file) {
   return source.toLowerCase().replace(/^\./, "").split(".").pop();
 }
 
+export function splitFileName(fileName) {
+  const normalized = String(fileName || "");
+  const lastDot = normalized.lastIndexOf(".");
+  if (lastDot <= 0) {
+    return { baseName: normalized, extension: "" };
+  }
+  return {
+    baseName: normalized.slice(0, lastDot),
+    extension: normalized.slice(lastDot + 1),
+  };
+}
+
+export function buildFileName(baseName, extension) {
+  const trimmed = String(baseName || "").trim();
+  const ext = String(extension || "")
+    .replace(/^\./, "")
+    .trim();
+  if (!ext) return trimmed;
+  return `${trimmed}.${ext}`;
+}
+
 export function categoryOf(file) {
   const extension = extensionOf(file);
   if (FILE_CATEGORIES.image.has(extension)) return "image";
@@ -74,12 +95,8 @@ export function filterAndSortFiles(files, options = {}) {
     return matchesCategory && matchesQuery;
   });
   const directions = {
-    newest: (a, b) =>
-      new Date(b.updated || b.create_at || 0) -
-      new Date(a.updated || a.create_at || 0),
-    oldest: (a, b) =>
-      new Date(a.updated || a.create_at || 0) -
-      new Date(b.updated || b.create_at || 0),
+    newest: (a, b) => new Date(b.create_at || 0) - new Date(a.create_at || 0),
+    oldest: (a, b) => new Date(a.create_at || 0) - new Date(b.create_at || 0),
     name: (a, b) =>
       (a.file_name || "").localeCompare(b.file_name || "", "zh-CN"),
     largest: (a, b) => Number(b.file_size || 0) - Number(a.file_size || 0),

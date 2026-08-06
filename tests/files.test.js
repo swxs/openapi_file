@@ -1,10 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  buildFileName,
   categoryOf,
   filterAndSortFiles,
   formatBytes,
   previewKind,
+  splitFileName,
 } from "../src/utils/files.js";
 
 test("按扩展名识别虚拟分类和预览方式", () => {
@@ -38,4 +40,17 @@ test("文件容量采用易读单位", () => {
   assert.equal(formatBytes(0), "0 B");
   assert.equal(formatBytes(1536), "1.5 KB");
   assert.equal(formatBytes(5 * 1024 * 1024), "5.0 MB");
+});
+
+test("拆分与合并文件名", () => {
+  assert.deepEqual(splitFileName("报告.pdf"), {
+    baseName: "报告",
+    extension: "pdf",
+  });
+  assert.deepEqual(splitFileName("README"), {
+    baseName: "README",
+    extension: "",
+  });
+  assert.equal(buildFileName("报告", "pdf"), "报告.pdf");
+  assert.equal(buildFileName("README", ""), "README");
 });
