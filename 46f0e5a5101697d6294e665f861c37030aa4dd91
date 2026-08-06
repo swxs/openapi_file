@@ -1,0 +1,31 @@
+tests/files.test.js
+  9e564440704d6681 4,9,44-56
+src/api/files.js
+  9e564440704d6681 15-18
+src/utils/files.js
+  9e564440704d6681 24-44,98-99
+src/views/FileCabinet.vue
+  9e564440704d6681 111,221,374,438-445,447-448
+src/components/PreviewModal.vue
+  9e564440704d6681 4,11-50,53-57,59-82,94-107,113,116,120-191,193-230,233,236-237,241,247-252,256,264-358,386-434
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "46f0e5a5101697d6294e665f861c37030aa4dd91",
+  "prompts": {
+    "9e564440704d6681": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "821f691c-1399-4bd4-a100-3f56f77a2d21",
+        "model": "composer-2.5"
+      },
+      "human_author": "swxs",
+      "messages": [],
+      "total_additions": 412,
+      "total_deletions": 42,
+      "accepted_lines": 412,
+      "overriden_lines": 0
+    }
+  }
+}
