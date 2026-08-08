@@ -24,9 +24,7 @@ async function ensureAccessToken() {
 service.interceptors.request.use(async (config) => {
   const token = await ensureAccessToken();
   if (!token) {
-    redirectToAuthorization(
-      `${window.location.pathname}${window.location.search}${window.location.hash}`,
-    );
+    redirectToAuthorization(window.location.hash.slice(1) || "/");
     return Promise.reject(new axios.Cancel("正在跳转到登录页"));
   }
   config.headers.Authorization = `Bearer ${token}`;

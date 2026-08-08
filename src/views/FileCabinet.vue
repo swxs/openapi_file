@@ -262,7 +262,8 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
 import { Modal, message } from "ant-design-vue";
 import {
   CopyOutlined,
@@ -292,6 +293,8 @@ import {
   unwrapData,
   unwrapList,
 } from "../utils/files";
+
+const route = useRoute();
 
 const MAX_UPLOAD_BYTES =
   Number(process.env.VUE_APP_UPLOAD_MAX_BYTES) || 500 * 1024 * 1024;
@@ -537,6 +540,13 @@ function handleDeleteShare(share) {
 }
 
 loadFiles();
+
+onMounted(() => {
+  const authError = route.query.auth_error;
+  if (authError) {
+    message.error(String(authError));
+  }
+});
 </script>
 
 <style lang="less" scoped>
